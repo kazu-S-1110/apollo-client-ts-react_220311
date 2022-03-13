@@ -29,6 +29,9 @@ export const GetRepositories: VFC = (): JSX.Element => {
     <>
       {loading && <p>'Loading...'</p>}
       {error && `Error! ${error.message}`}
+      {data?.user.repositories.nodes.map((repository: any) => (
+        <p key={repository.url}>{repository.name}</p>
+      ))}
     </>
   );
 };
