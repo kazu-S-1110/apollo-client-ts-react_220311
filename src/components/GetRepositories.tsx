@@ -1,13 +1,12 @@
-import { gql, NetworkStatus, useQuery } from '@apollo/client';
-import React, { ReactNode, VFC } from 'react';
-import { JsxElement } from 'typescript';
+import { gql, NetworkStatus, useLazyQuery, useQuery } from '@apollo/client';
+import { useState, VFC } from 'react';
 
 const GET_REPOSITORIES = gql`
-  query {
+  query GetRepositories($num: Int) {
     user(login: "kazu-S-1110") {
       name
       url
-      repositories(last: 20) {
+      repositories(last: $num) {
         totalCount
         nodes {
           name
@@ -22,27 +21,34 @@ const GET_REPOSITORIES = gql`
 `;
 
 export const GetRepositories: VFC = () => {
-  const { loading, error, data, refetch, networkStatus } = useQuery(
-    GET_REPOSITORIES,
-    {
+  const [getNum, setGetNum] = useState<string | number>(0);
+  const [getRepos, { loading, error, data, refetch, networkStatus }] =
+    useLazyQuery(GET_REPOSITORIES, {
+      variables: {
+        num: getNum,
+      },
       notifyOnNetworkStatusChange: true,
-    }
-  );
-
-  console.log(data);
+    });
 
   if (networkStatus === NetworkStatus.refetch) return <p>Refetching!</p>;
-
   if (loading) return <p>'Loading...'</p>;
+  if (error) return <p>{`Error! :${error.message}`}</p>;
 
   return (
     <>
-      {loading && 'loading...'}
-      {error && `Error! ${error.message}`}
+      <input
+        type="number"
+        value={getNum}
+        onChange={(e) => setGetNum(e.target.value)}
+      />
+      <button onClick={() => getRepos({ variables: { num: Number(getNum) } })}>
+        Fetch data
+      </button>
+      <button onClick={() => refetch()}>Refetch!</button>
+
       {data?.user.repositories.nodes.map((repository: any) => (
         <p key={repository.url}>{repository.name}</p>
       ))}
-      <button onClick={() => refetch()}>Refetch!</button>
     </>
   );
 };
