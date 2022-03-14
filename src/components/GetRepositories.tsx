@@ -1,5 +1,6 @@
-import { gql, useQuery } from '@apollo/client';
-import React, { VFC } from 'react';
+import { gql, NetworkStatus, useQuery } from '@apollo/client';
+import React, { ReactNode, VFC } from 'react';
+import { JsxElement } from 'typescript';
 
 const GET_REPOSITORIES = gql`
   query {
@@ -20,18 +21,28 @@ const GET_REPOSITORIES = gql`
   }
 `;
 
-export const GetRepositories: VFC = (): JSX.Element => {
-  const { loading, error, data } = useQuery(GET_REPOSITORIES);
+export const GetRepositories: VFC = () => {
+  const { loading, error, data, refetch, networkStatus } = useQuery(
+    GET_REPOSITORIES,
+    {
+      notifyOnNetworkStatusChange: true,
+    }
+  );
 
   console.log(data);
 
+  if (networkStatus === NetworkStatus.refetch) return <p>Refetching!</p>;
+
+  if (loading) return <p>'Loading...'</p>;
+
   return (
     <>
-      {loading && <p>'Loading...'</p>}
+      {loading && 'loading...'}
       {error && `Error! ${error.message}`}
       {data?.user.repositories.nodes.map((repository: any) => (
         <p key={repository.url}>{repository.name}</p>
       ))}
+      <button onClick={() => refetch()}>Refetch!</button>
     </>
   );
 };
