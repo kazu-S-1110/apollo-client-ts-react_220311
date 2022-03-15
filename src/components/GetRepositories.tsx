@@ -28,6 +28,8 @@ export const GetRepositories: VFC = () => {
         num: getNum,
       },
       notifyOnNetworkStatusChange: true,
+      fetchPolicy: 'network-only',
+      nextFetchPolicy: 'cache-first',
     });
 
   if (networkStatus === NetworkStatus.refetch) return <p>Refetching!</p>;
