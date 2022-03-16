@@ -16,7 +16,12 @@ type inputType = {
 
 export const AddTodo = () => {
   let input: inputType;
-  const [addTodo, { data, loading, error }] = useMutation(ADD_TODO);
+  const [addTodo, { data, loading, error }] = useMutation(ADD_TODO, {
+    variables: {
+      text: 'placeholder', //useMutationとmutate関数にて同時にvariablesを指定した場合、mutate関数側が優先される
+      // someOtherVariable: 1234,
+    },
+  });
 
   if (loading) return <p>Submitting...</p>;
   if (error) return <p>{`Submission error! ${error.message}`}</p>;
