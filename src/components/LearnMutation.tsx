@@ -21,7 +21,7 @@ const UPDATE_TODO = gql`
 
 export const LearnMutation = () => {
   const [inputText, setInputText] = useState('');
-  const { loading, error, data } = useQuery(GET_TODOS);
+  const { loading, error, data, refetch } = useQuery(GET_TODOS);
   const [updateTodo, { loading: mutationLoading, error: mutationError }] =
     useMutation(UPDATE_TODO);
 
@@ -51,6 +51,7 @@ export const LearnMutation = () => {
           {mutationError && <p>Error :( Please try again</p>}
         </div>
       ))}
+      <button onClick={() => refetch()}>Refetch</button>
     </div>
   );
 };

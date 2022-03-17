@@ -1,27 +1,18 @@
 import { gql, useMutation } from '@apollo/client';
-import React from 'react';
+import React, { useState } from 'react';
 
 const ADD_TODO = gql`
-  mutation AddTodo($text: String!) {
-    addTodo(text: $text) {
+  mutation AddTodo($type: String!) {
+    addTodo(type: $type) {
       id
-      text
+      type
     }
   }
 `;
 
-type inputType = {
-  value: string;
-};
-
 export const AddTodo = () => {
-  let input: inputType;
-  const [addTodo, { data, loading, error }] = useMutation(ADD_TODO, {
-    variables: {
-      text: 'placeholder', //useMutationとmutate関数にて同時にvariablesを指定した場合、mutate関数側が優先される
-      // someOtherVariable: 1234,
-    },
-  });
+  const [input, setInput] = useState('');
+  const [addTodo, { data, loading, error }] = useMutation(ADD_TODO);
 
   if (loading) return <p>Submitting...</p>;
   if (error) return <p>{`Submission error! ${error.message}`}</p>;
@@ -33,11 +24,11 @@ export const AddTodo = () => {
         <form
           onSubmit={(e) => {
             e.preventDefault();
-            addTodo({ variables: { text: input.value } });
-            input.value = '';
+            addTodo({ variables: { type: input } });
+            setInput('');
           }}
         >
-          <input />
+          <input value={input} onChange={(e) => setInput(e.target.value)} />
           <button type="submit">Add Todo</button>
         </form>
       </div>
