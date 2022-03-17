@@ -1,5 +1,6 @@
 import { gql, useMutation } from '@apollo/client';
 import React, { useState } from 'react';
+import { GET_TODOS } from './LearnMutation';
 
 const ADD_TODO = gql`
   mutation AddTodo($type: String!) {
@@ -12,11 +13,14 @@ const ADD_TODO = gql`
 
 export const AddTodo = () => {
   const [input, setInput] = useState('');
-  const [addTodo, { data, loading, error }] = useMutation(ADD_TODO);
+  const [addTodo, { data, loading, error }] = useMutation(ADD_TODO, {
+    refetchQueries: [GET_TODOS, 'get_todo'],
+  });
 
   if (loading) return <p>Submitting...</p>;
   if (error) return <p>{`Submission error! ${error.message}`}</p>;
 
+  console.log(data);
   return (
     <div>
       <h1>AddTodo</h1>

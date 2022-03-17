@@ -1,7 +1,7 @@
 import { gql, useMutation, useQuery } from '@apollo/client';
 import React, { useState } from 'react';
 
-const GET_TODOS = gql`
+export const GET_TODOS = gql`
   {
     todos {
       id
@@ -19,6 +19,11 @@ const UPDATE_TODO = gql`
   }
 `;
 
+type Todo_type = {
+  id: string;
+  type: string;
+};
+
 export const LearnMutation = () => {
   const [inputText, setInputText] = useState('');
   const { loading, error, data, refetch } = useQuery(GET_TODOS);
@@ -28,16 +33,17 @@ export const LearnMutation = () => {
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error</p>;
 
+  console.log(data);
   return (
     <div>
       <h1>Learn mutation</h1>
-      {data.todos.map((id: string, type: string) => (
-        <div key={id}>
-          <p>{type}</p>
+      {data.todos.map((todo: Todo_type) => (
+        <div key={todo.id}>
+          <p>{todo.type}</p>
           <form
             onSubmit={(e) => {
               e.preventDefault();
-              updateTodo({ variables: { id, type: inputText } });
+              updateTodo({ variables: { type: inputText } });
               setInputText('');
             }}
           >
