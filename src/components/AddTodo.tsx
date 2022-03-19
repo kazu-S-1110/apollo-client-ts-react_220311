@@ -14,7 +14,26 @@ const ADD_TODO = gql`
 export const AddTodo = () => {
   const [input, setInput] = useState('');
   const [addTodo, { data, loading, error }] = useMutation(ADD_TODO, {
-    refetchQueries: [GET_TODOS, 'get_todo'],
+    // refetchQueries: [GET_TODOS, 'get_todo'],//ただrefetchする時はこのオプション
+    // 直接的にキャッシュの内容を変えたい時は以下のように
+    update(cache, { data: { addTodo } }) {
+      cache.modify({
+        fields: {
+          todos(existingTodos = []) {
+            const newTodoRef = cache.writeFragment({
+              data: addTodo,
+              fragment: gql`
+                fragment NewTodo on Todo {
+                  id
+                  type
+                }
+              `,
+            });
+            return [...existingTodos, newTodoRef];
+          },
+        },
+      });
+    },
   });
 
   if (loading) return <p>Submitting...</p>;
