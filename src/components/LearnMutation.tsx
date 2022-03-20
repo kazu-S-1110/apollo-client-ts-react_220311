@@ -26,7 +26,9 @@ type Todo_type = {
 
 export const LearnMutation = () => {
   const [inputText, setInputText] = useState('');
-  const { loading, error, data, refetch } = useQuery(GET_TODOS);
+  const { loading, error, data, refetch } = useQuery(GET_TODOS, {
+    errorPolicy: 'all',
+  });
   const [updateTodo, { loading: mutationLoading, error: mutationError }] =
     useMutation(UPDATE_TODO);
 
